@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Calculadora de peso estelar</title>
+</head>
+<body>
+    <h1>Tu peso en otro planeta</h1>
+    <p>En la tierra pesas distinto que en marte o jupiter</p>
+    <script>
+        var peso = parseInt(prompt("Cual es tu peso?"));
+        var planeta = parseInt(prompt("Elige tu planeta.\n1 es marte, 2 es jupiter"));
+        var g_tierra = 9.8;
+        var g_marte = 3.7;
+        var g_jupiter = 24.8;
+        var peso_final;
+        var nombre_planeta;
+        if(planeta == 1){
+            peso_final = (peso * g_marte) / g_tierra;
+            nombre_planeta = "Marte";
+        }else if(planeta == 2){
+            peso_final = (peso * g_jupiter) / g_tierra;
+            nombre_planeta = "Jupiter";
+        }else{
+            peso_final = 1000000;
+            nombre_planeta = "Krypton";
+        }
+        peso_final = parseInt(peso_final);
+        document.write("Tu peso en " + nombre_planeta + " es <strong>" + peso_final + " Kilos</strong>");
+    </script>
+</body>
+</html>
