@@ -1,12 +1,20 @@
-var papel = document.getElementById("area").getContext("2d"); //funcion del objeto canvas, obtiene area de dibujo
-document.addEventListener("keydown", dibujarPorTeclado);
-var x = 100;
-var y = 100;
+var canvas = document.getElementById("area");
+var papel = canvas.getContext("2d");
+document.addEventListener("keydown", drawByKey);
+document.addEventListener("keydown", checkArrows);
+document.addEventListener("keyup", resetArrowsFlags);
+area.addEventListener("mousedown", mouseIsClicked); 
+area.addEventListener("mousemove", drawByMouse);
+area.addEventListener("mouseup", resetMouseFlag);
 
-// mousedown - mouseup
-// evento, objetos 
+// flags para indicar si las flachas estan siendo presionadas, se inicializan en falso
+var pressedUp = false;
+var pressedRight = false;
+var pressedDown = false;
+var pressedLeft = false;
+var mouseIsDrawing = false;
 
-// objeto literal
+// objeto literal, constantes con codigo numerico de las flechas
 var teclas = {
     UP: 38,
     RIGHT: 39,
@@ -14,42 +22,115 @@ var teclas = {
     LEFT: 37
 };
 
-dibujarLinea("red", x-1, y+1, x+1, y+1, papel);
+// define desde donde comienza a dibujar en caso de usar teclado
+var x = 150;
+var y = 150;
 
-function dibujarPorTeclado(e) {
-
-    console.log(e);
-
-
-    var color = "blue";
-    var mov = 3;
-
-    if(e.keyCode == 38 ){
-        console.log('super!');
+// setea en true los flags al momento de ser presionadas las flecas del teclado
+function checkArrows(e) {
+    if(e.keyCode == teclas.UP){
+        pressedUp = true;
+    } else if(e.keyCode == teclas.RIGHT){
+        pressedRight = true;
+    } else if(e.keyCode == teclas.DOWN){
+        pressedDown = true;
+    }else if(e.keyCode == teclas.LEFT){
+        pressedLeft = true;
     }
+}
 
+// al soltar las flechas al dejar de dibujar devuelve los flags a falso
+function resetArrowsFlags() {
+    pressedUp = false;
+    pressedRight = false;
+    pressedDown = false;
+    pressedLeft = false;
+}
+
+// invoca al metodo dibujarLinea dependiendo de las flechas presionadas
+function drawByKey(e) {
+    var color = "blue";
+    var mov = 1;
+    // Pinta lineas verticales, aca utilice un if, me acamoda mas que el switch =)
+    if(pressedUp && pressedRight){
+         // diagonal derecha arriba
+        draw(color, x, y, x+mov, y-mov, papel);
+        x = x + mov;
+        y = y - mov;
+    } else if(pressedRight && pressedDown){
+        // diagonal derecha abajo
+        draw(color, x, y, x+mov, y+mov, papel);
+        x = x + mov;
+        y = y + mov;
+    } else if(pressedDown && pressedLeft){
+        // diagonal izquierda abajo
+        draw(color, x, y, x-mov, y+mov, papel);
+        x = x - mov;
+        y = y + mov;
+    } else if(pressedLeft && pressedUp){
+        // diagonal izquierda arriba
+        draw(color, x, y, x-mov, y-mov, papel);
+        x = x - mov;
+        y = y - mov;
+    } 
+
+    // Pinta linea horizontales y verticales
     switch (e.keyCode) {
         case teclas.UP:
-            dibujarLinea(color, x, y, x, y-mov, papel);
+            draw(color, x, y, x, y-mov, papel);
             y = y - mov;
         break;
         case teclas.RIGHT:
-            dibujarLinea(color, x, y, x+mov, y, papel);
+            draw(color, x, y, x+mov, y, papel);
             x = x + mov;
         break;
         case teclas.DOWN:
-            dibujarLinea(color, x, y, x, y+mov, papel);
+            draw(color, x, y, x, y+mov, papel);
             y = y + mov;
         break;
         case teclas.LEFT:
-            dibujarLinea(color, x, y, x-mov, y, papel);
+            draw(color, x, y, x-mov, y, papel);
             x = x-mov;
         break;
     }
-    //console.log(x + ' - ' + y);
 }
 
-function dibujarLinea(color, xinit, yinit, xfin, yfin, lienzo) {
+// incova a metodo mousePosition para obtener posision real del puntero del mouse y setea flag en true 
+function mouseIsClicked(e) {
+    var mousePos = mousePosition(e.x, e.y);
+    x = mousePos.xMouse;
+    y = mousePos.yMouse;
+    mouseIsDrawing = true;
+}
+
+// invoca a mousePosition y pinta desde la ubicacion en la que esta el puntero
+function drawByMouse(e) {
+    var color = "red";
+    var mov = 1;
+    var realPos = mousePosition(e.clientX, e.clientY);
+    if(mouseIsDrawing == true) {
+        draw(color, x, y, realPos.xMouse+mov, realPos.yMouse-mov, papel);
+    }
+    x = realPos.xMouse+mov;
+    y = realPos.yMouse-mov;
+}
+
+// flag a falso
+function resetMouseFlag() {
+    mouseIsDrawing = false;
+}
+
+// obtiene posision real del mouse en el canvas mediante funcion getBoundingClientRect()
+function mousePosition(posX, posY) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        xMouse : posX - rect.left,
+        yMouse : posY - rect.top
+    }
+}
+
+// dibuja en el lienzo
+function draw(color, xinit, yinit, xfin, yfin, lienzo) {
     lienzo.beginPath();
     lienzo.strokeStyle = color;
     lienzo.lineWidth = 2;
