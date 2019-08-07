@@ -76,7 +76,8 @@ var james = {
 //Se crea objeto imagen, esa imagen se inserta en el canvas
 fondo.objeto = new Image(); // instancia de la clase objeto que se guarda en var imagen
 fondo.objeto.src = fondo.url; // se asigna la ruta var mapa mediante atributo src del objeto
-fondo.objeto.addEventListener("load", cargarFondo); // se triggea evento de carga de la imagen, una vez definido el atributo src
+fondo.objeto.addEventListener("load", cargarFondo); // se triggea evento de carga de la imagen, 
+                                                    // una vez definido el atributo src
 
 vaca.objeto = new Image();
 vaca.objeto.src = vaca.url;
